@@ -21,9 +21,11 @@ import java.util.List;
 
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder>{
 
+    //Data to be displayed
     private List<Note> notes;
     private NoteListener notesListener;
 
+    //set the initial data in the constructor
     public NotesAdapter(List<Note> notes,NoteListener notesListener) {
         this.notes = notes;
         this.notesListener = notesListener;

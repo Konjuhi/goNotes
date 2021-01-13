@@ -68,13 +68,13 @@ public class MainActivity extends AppCompatActivity implements NoteListener {
         //getNotes();
 
         //while this method is in onCreate() it means the application is just started and we need to display all notes from db
-        getNotes(REQUEST_CODE_SHOW_NOTES);
+        getNotes(REQUEST_CODE_SHOW_NOTES,false);
 
     }
 
     //after we add  public static final int REQUEST_CODE_SHOW_NOTES =3, we add in method a parameter for getting the request code
-   // private void getNotes(){
-   private void getNotes(final int requestCode){
+   // private void getNotes(){ 2) we check if we have deleted note so we add a boolean
+   private void getNotes(final int requestCode,final boolean isNoteDeleted){
 
         @SuppressLint("StaticFieldLeak")
         class GetNotesTask extends AsyncTask<Void,Void, List<Note>>{
@@ -120,8 +120,15 @@ public class MainActivity extends AppCompatActivity implements NoteListener {
                     //When we remove note from clicked position and adding the latest updated note from the same position from db
                     //and notify adapter for item changed at the position
                     noteList.remove(noteClickedPosition);
-                    noteList.add(noteClickedPosition,notes.get(noteClickedPosition));
-                    notesAdapter.notifyItemInserted(noteClickedPosition);
+                    /*noteList.add(noteClickedPosition,notes.get(noteClickedPosition));
+                    notesAdapter.notifyItemInserted(noteClickedPosition);*/
+
+                    if(isNoteDeleted){
+                        notesAdapter.notifyItemRemoved(noteClickedPosition);
+                    }else{
+                        noteList.add(noteClickedPosition,notes.get(noteClickedPosition));
+                        notesAdapter.notifyItemChanged(noteClickedPosition);
+                    }
                 }
 
             }
@@ -142,11 +149,11 @@ public class MainActivity extends AppCompatActivity implements NoteListener {
             // request code if for add note and the result is RESULT_OK.It means a new note is added from
             // CreateNote activity and its result is sent back to this activity that's why we are
             //passing REQUEST_CODE_ADD_NOTE to that method
-            getNotes(REQUEST_CODE_SHOW_NOTES);
+            getNotes(REQUEST_CODE_SHOW_NOTES,false);
         }else if( requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode ==RESULT_OK){
             if(data !=null){
                 //when already available note is updated from CreateNote and its result is sent back to activity
-                getNotes(REQUEST_CODE_UPDATE_NOTE);
+                getNotes(REQUEST_CODE_UPDATE_NOTE,data.getBooleanExtra("isNoteDeleted",false));
             }
         }
     }
